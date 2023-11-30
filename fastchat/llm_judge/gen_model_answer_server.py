@@ -18,13 +18,8 @@ from fastchat.model import load_model, get_conversation_template
 from fastchat.utils import str_to_torch_dtype
 from openai import OpenAI
 import openai
-# openai.api_base = "http://localhost:8000/v1"
+
 client = OpenAI(base_url="http://localhost:8000/v1")
-# client = OpenAI(
-#     # defaults to os.environ.get("OPENAI_API_KEY")
-#     api_key=openai.api_key,
-#     timeout=10.0,
-# )
 
 def convert_to_chat_message(list_conv):
     list_chat_message = []

@@ -114,7 +114,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.openai_api_base is not None:
-        openai.api_base = args.openai_api_base
+        # TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(api_base=args.openai_api_base)'
+        # openai.api_base = args.openai_api_base
 
     question_file = f"data/{args.bench_name}/question.jsonl"
     questions = load_questions(question_file, args.question_begin, args.question_end)
