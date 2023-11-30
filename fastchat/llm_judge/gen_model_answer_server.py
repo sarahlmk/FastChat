@@ -16,10 +16,15 @@ from tqdm import tqdm
 from fastchat.llm_judge.common import load_questions, temperature_config
 from fastchat.model import load_model, get_conversation_template
 from fastchat.utils import str_to_torch_dtype
+from openai import OpenAI
 import openai
-openai.api_base = "http://localhost:8000/v1"
-openai.api_key = "functionary" # We just need to set this something other than None, so it works with openai package. No API key is required.
-
+# openai.api_base = "http://localhost:8000/v1"
+client = OpenAI(base_url="http://localhost:8000/v1")
+# client = OpenAI(
+#     # defaults to os.environ.get("OPENAI_API_KEY")
+#     api_key=openai.api_key,
+#     timeout=10.0,
+# )
 
 def convert_to_chat_message(list_conv):
     list_chat_message = []
@@ -33,14 +38,15 @@ def convert_to_chat_message(list_conv):
 
 def generate(history, temperature, max_tokens):
     messages = convert_to_chat_message(history)
-    response = openai.ChatCompletion.create(
-        model="../functionary-13b",
+    response = client.chat.completions.create(
+        model="../artifacts/functionary_mistral",
         messages=messages,
         max_tokens=max_tokens,
         temperature = temperature,
-        functions=[]
+        tools=[],
+        tool_choice="auto"
     )
-    response_message = response["choices"][0]["message"]
+    response_message = response.choices[0].message
     return response_message
 
 def run_eval(
@@ -99,8 +105,8 @@ def get_model_answers(
                 qs = question["turns"][j]
                 history.append(qs)
                 output = generate(history, temperature, max_new_token)
-                turns.append(output["content"])
-                history.append(output["content"])
+                turns.append(output.content)
+                history.append(output.content)
 
             choices.append({"index": i, "turns": turns, "history": history})
 
